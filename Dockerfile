@@ -13,7 +13,16 @@ WORKDIR ${ROOT}
 RUN pip install -r requirements.txt
 RUN pip install insightface==0.7.3 opencv-python xformers onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git custom_nodes/ComfyUI-Manager
+RUN git clone https://github.com/cubiq/ComfyUI_IPAdapter_plus.git custom_nodes/ComfyUI_IPAdapter_plus
+RUN git clone https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git custom_nodes/ComfyUI_UltimateSDUpscale --recursive
+RUN git clone https://github.com/Fannovel16/comfyui_controlnet_aux.git custom_nodes/comfyui_controlnet_aux
+RUN pip install -r custom_nodes/comfyui_controlnet_aux/requirements.txt
+RUN git clone https://github.com/crystian/ComfyUI-Crystools.git custom_nodes/ComfyUI-Crystools
+RUN pip install -r custom_nodes/ComfyUI-Crystools/requirements.txt
+RUN git clone https://github.com/Acly/comfyui-tooling-nodes.git custom_nodes/comfyui-tooling-nodes
+RUN git clone https://github.com/Acly/comfyui-inpaint-nodes.git custom_nodes/comfyui-inpaint-nodes
+
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV CLI_ARGS=""
 EXPOSE 7860
-CMD ["python", "-u", "main.py", "--listen" ,"--port", "7860", "${CLI_ARGS}"]
+CMD ["python", "-u", "main.py", "--listen" ,"--port", "7860"]
