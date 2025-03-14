@@ -10,6 +10,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 WORKDIR ${ROOT}
 
+RUN git checkout 35504e2f931c59190d0dd1b4ab2288f1c7f0e9f8
+
+COPY extra_model_paths.yaml .
+
 RUN pip install -r requirements.txt
 RUN pip install insightface==0.7.3 opencv-python xformers onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
@@ -24,5 +28,7 @@ RUN git clone https://github.com/Acly/comfyui-tooling-nodes.git custom_nodes/com
 RUN git clone https://github.com/Acly/comfyui-inpaint-nodes.git custom_nodes/comfyui-inpaint-nodes
 
 ENV NVIDIA_VISIBLE_DEVICES=all
+ENV CLI_ARGS=""
 EXPOSE 7860
-CMD ["python", "-u", "main.py", "--listen" ,"--port", "7860"]
+ENTRYPOINT ["python", "-u", "main.py", "--listen", "--port", "7860"]
+CMD ${CLI_ARGS}
