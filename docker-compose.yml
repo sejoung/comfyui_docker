@@ -1,0 +1,21 @@
+services:
+  comfyui:
+    build: .
+    container_name: krita-ai-comfyui
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./output:/comfyui/output
+      - ./data:/data
+      - ./input:/comfyui/input
+    stop_signal: SIGKILL
+    tty: true
+    environment:
+      - CLI_ARGS=
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ '0' ]
+              capabilities: [ compute, utility ]

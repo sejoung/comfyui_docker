@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
@@ -9,10 +9,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
   git clone https://github.com/comfyanonymous/ComfyUI.git ${ROOT}
 
 WORKDIR ${ROOT}
-
-RUN git checkout 35504e2f931c59190d0dd1b4ab2288f1c7f0e9f8
-
-COPY extra_model_paths.yaml .
 
 RUN pip install -r requirements.txt
 RUN pip install insightface==0.7.3 opencv-python xformers onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
@@ -27,8 +23,12 @@ RUN pip install -r custom_nodes/ComfyUI-Crystools/requirements.txt
 RUN git clone https://github.com/Acly/comfyui-tooling-nodes.git custom_nodes/comfyui-tooling-nodes
 RUN git clone https://github.com/Acly/comfyui-inpaint-nodes.git custom_nodes/comfyui-inpaint-nodes
 
+COPY ./extra_model_paths.yaml /docker/
+RUN cp /docker/extra_model_paths.yaml ${ROOT}/extra_model_paths.yaml
+RUN rm -rf ${ROOT}/output
+RUN rm -rf ${ROOT}/input
+
+ENV PYTHONPATH="${PYTHONPATH}:${PWD}" CLI_ARGS=""
 ENV NVIDIA_VISIBLE_DEVICES=all
-ENV CLI_ARGS=""
 EXPOSE 7860
-ENTRYPOINT ["python", "-u", "main.py", "--listen", "--port", "7860"]
-CMD ${CLI_ARGS}
+CMD python -u main.py --listen --port 7860 ${CLI_ARGS}
